@@ -85,4 +85,7 @@ type NoDistributeType = Wrapper<string | number>;
  *
  * 两种方式没有好坏之分，分发行为是条件类型遇到联合类型的预期行为，如果不想要这种预期行为，就使用 [] 包裹 extends 两侧的类型
  *
+ * 注意，不仅是 extends 左侧，extends 右侧的类型也可进行分布式类型的推断
+ *
+ *
  */
