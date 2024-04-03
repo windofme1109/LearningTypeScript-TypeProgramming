@@ -218,24 +218,63 @@ type FibLoop<Prev extends unknown[], Cur extends unknown[], IndexArr extends unk
     IndexArr['length'] extends Num ?
         Cur['length'] : FibLoop<Cur, [...Cur, ...Prev], [unknown, ...IndexArr], Num>
 
+
+/**
+ * 
+ * 由 js 递归求斐波那契数列转换而来的方式
+ * 
+ */
+type FibLoop2<Prev extends unknown[], Cur extends unknown[], IndexArr extends unknown[], Num extends number = 1> =
+    Num extends 0 ? 0
+        : Num extends 1 ? 1
+            : IndexArr['length'] extends Num ?
+                Cur['length'] : FibLoop2<Cur, [...Cur, ...Prev], [...IndexArr, unknown], Num>
+    
+
 type Fibonacci<Num extends number> = FibonacciLoop<[1], [], [], Num>;
+
+
+// 这里给 Prev 设置 1 的原因是：
+// 对于斐波那契数列而言，n = 0，Fib(0) = 0，n = 1，Fib(1) = 1，n = 2，Fib(2) = 1
+// 我们必须兼容 0 和 1 这两种情况
+// 因为用来计数的 IndexArr 起始长度为 0，Cur 表示当前的数字，即需要返回的数字
+// 那么当 Num 为 0 的时候, IndexArr 的长度与 Num 匹配，则直接返回 Cur，Cur 得为 0，所以 Cur 的默认值需要为 []
+// 而 Num 为 1 时，IndexArr 的长度与 Num 不匹配，所以需要进行递归，而这一次递归传入的 Cur 为 [...Prev, ...Cur]
+// 而经过一次递归以后，IndexArr 的长度为 1，与 Num 匹配，则需要返回当前 Cur 的结果，也就是 1
+// 而初始化的 Cur 为 []，为了保证这一次递归返回的结果为 1，则需设置 Prev 初始值为 [1]，则 [...Prev, ...Cur] = [1]
 type Fibonacci2<Num extends number> = FibLoop<[1], [], [], Num>;
+
+// 对 n 为 0 和 n 为 1 的情况进行特殊处理，递归从索引为 2 开始，所以，需要设置 IndexArr 为 [unknown]，长度为 1，保证从 2 开始进行递归
+// 而 Prev 和 Cur 分别设置为 [] 和 [1]，即设置 n = 0，Fib(0) = 0，n = 1，Fib(1) = 1
+// 从 n = 2 开始，即可应用公式：F(n) = F(n - 1) + F(n - 2)
+type Fibonacci3<Num extends number> = FibLoop2<[], [1], [unknown], Num>;
 
 // 1 1 2 3 5 8 13 21 34 55
 type FibonacciLoopResult1 = Fibonacci<2>
+
 type FibonacciLoopResult2 = Fibonacci2<10>
+
+type FibonacciLoopResult3 = Fibonacci3<10>
 
 // 上面使用 递归方式计算斐波那契数列类似于下面这种方式：
 let prev  = 0;
 let current = 1;
 let next = current;
-for (let i = 2; i <= 8; i++) {
-    next = current + prev;
-    prev = current;
-    current = next;
+for (let i = 1; i <= 8; i++) {
+    let temp = current;
+    current = current + prev;
+    prev = temp;
    
 }
 
 
 
-console.log(next)
+console.log(current)
+
+function fib(n) {
+    if (n <= 1) {
+        return n;
+    }
+
+    return fib(n - 1) + fib(n - 2);
+}
